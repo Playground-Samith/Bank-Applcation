@@ -1,6 +1,8 @@
 import java.util.Scanner;
+import java.util.Vector;
 
 public class App_Assignment2{
+    
     private static final Scanner SCANNER=new Scanner(System.in);
     public static void main(String[] args) {
         final String CLEAR="\033[H\033[2J";
@@ -20,7 +22,10 @@ public class App_Assignment2{
         final String ERROR_MSG=String.format("%s%s%s",COLOR_RED_BOLD,"%s",RESET);
         final String SUCCESS_MSG=String.format("%s%s%s",COLOR_GREEN_BOLD,"%s",RESET);
 
-        String[][] accountDetails=new String[0][];
+        // String[][] accountDetails=new String[0][];
+        Vector<String> accountNumber =new Vector<>();
+        Vector<String> accountHoldername=new Vector<>();
+        Vector<String> accountBalance=new Vector<>();
 
         do{
             final String APP_TITLE=String.format("%s%s%s",COLOR_BLUE_BOLD,screen,RESET);
@@ -53,13 +58,12 @@ public class App_Assignment2{
                     default: continue;
                 }
                 break;
-                
+///////////////////////////////////////////////////////////////////////////////////////////////////////                
                 case OPEN_ACCOUNT:
                     String name;
                     String deposit;
                     boolean valid;
-                    System.out.printf("ID : SDB-%05d \n",accountDetails.length+1);
-
+                    System.out.printf("ID : SDB-%05d \n",accountHoldername.size()+1);
                     //Name Validation
                     do{
                     valid=true;
@@ -88,41 +92,161 @@ public class App_Assignment2{
                     System.out.print("Initial Deposit : ");
                     deposit=SCANNER.nextLine();
 
-                    if(Integer.valueOf(deposit)<5000){
-                        System.out.printf(ERROR_MSG+"\n","Insuficient amount");
+                    if(deposit.isBlank()){
+                        System.out.printf(ERROR_MSG+"\n","Deposit can't be empty");
+                        valid=false;
+                        continue;
+                        
+                    }else if((checkLetter(deposit))){
+                        System.out.printf(ERROR_MSG+"\n","Invalid Value");
+                        valid=false;
+                        continue;
+
+                    }else if(Integer.valueOf(deposit)<5000){
                         System.out.printf(ERROR_MSG+"\n","Please deposit at least Rs.5,000.00");
                         valid=false;
                         continue;
                     }
 
-
                 }while(!valid);
 
-                String[][] newAccountDetails=new String[accountDetails.length+1][3];
+                accountNumber.add("SBD-"+String.format("%05d",accountBalance.size()+1));
+                accountHoldername.add(name);
+                accountBalance.add(deposit);
 
-                for(int i=0;i<newAccountDetails.length-1;i++){
-                    newAccountDetails[i]=accountDetails[i];
-                }
-
-                newAccountDetails[newAccountDetails.length-1][0]=newAccountDetails.length+"";
-                newAccountDetails[newAccountDetails.length-1][1]=name;
-                newAccountDetails[newAccountDetails.length-1][2]=deposit;
-
-                accountDetails=newAccountDetails;
-
-                System.out.printf(SUCCESS_MSG,String.format("Account SDB-%05d for %s has been created sucessfully.\n",accountDetails.length,name));
+                System.out.printf(SUCCESS_MSG,String.format("Account SDB-%05d for %s has been created sucessfully.\n",accountHoldername.size(),name));
                 System.out.print("Do you want to add new student (Y/n)? ");
                 if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
                 screen = DASHBOARD;
 
                 break;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                default:
+                //Deposit money
+                
+                case DEPOSIT_MONEY:
+                String accountNum;
+                int index=0;
+                String newDeposit="";
+                valid=true;
+                case1:
+                do{
+                    System.out.print("Enter your Account No : ");
+                    accountNum=SCANNER.nextLine().strip();
+                do{ 
+                    valid=false;
+
+                    if(accountNum.isBlank()){
+                        System.out.printf(ERROR_MSG+"\n","Account Number can't be empty");
+                        break;
+                        
+                    }else if(!accountNum.startsWith("SBD-") || !(accountNum.length()==9 && checkNum(accountNum))){
+                        System.out.printf(ERROR_MSG+"\n","Invalid format");
+                        break;
+                    }else if(!accountNumber.contains(accountNum)){
+                        System.out.printf(ERROR_MSG+"\n","Not found");
+                        break;
+                    }else{
+                        valid=true;
+                    }
+
+                }while(!valid);
+
+                if(valid==false){
+                System.out.print("Do you want to try again (Y/n)? ");
+                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                screen=DEPOSIT_MONEY;
+                break;}
+                else {screen = DASHBOARD;
+                break;}
+                }
+
+                String balance;
+                index=accountNumber.indexOf(accountNum);
+                balance=accountBalance.get(index);
+                System.out.printf("Current account balance :Rs.%,.2f \n",Double.valueOf(balance));
+
+                do{
+                    valid=true;
+                    System.out.print("Deposit amount : ");
+                    newDeposit=SCANNER.nextLine();
+
+                    if(newDeposit.isBlank()){
+                        System.out.printf(ERROR_MSG+"\n","Deposit can't be empty");
+                        valid=false;
+                        continue;
+                        
+                    }else if((checkLetter(newDeposit))){
+                        System.out.printf(ERROR_MSG+"\n","Invalid Value");
+                        valid=false;
+                        continue;
+
+                    }else if(Integer.valueOf(newDeposit)<500){
+                        System.out.printf(ERROR_MSG+"\n","Please deposit at least Rs.500.00");
+                        valid=false;
+                        continue;
+                    }
+
+                }while(!valid);
+            
+                String total=Integer.valueOf(accountBalance.get(index))+Integer.valueOf(newDeposit)+"";
+                accountBalance.set(index, total);
+                System.out.printf("New balance : Rs.%,.2f \n",Double.valueOf(total));
+                
+                System.out.print("Do you want to continue (Y/n)? ");
+                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
+                screen = DASHBOARD;
+
+
+                }while(!valid);
+                    
+            break;
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+            //Don't change
+            default:
                   System.exit(0);
-            }
-
-           
+            } 
         }while(true);
+
         
     }
+    public static boolean checkDigit(String deposit){
+            for(int i=0;i<deposit.length();i++){
+                if(Character.isDigit(deposit.charAt(i))){
+                    return true;
+                } 
+            }return false;
+        
+        }
+
+    public static boolean checkLetter(String deposit){
+            for(int i=0;i<deposit.length();i++){
+                if(Character.isLetter(deposit.charAt(i))){
+                    return true;
+                } 
+            }return false;
+        
+        }
+     public static boolean checkNum(String deposit){
+            int count=0;
+            for(int i=4;i<deposit.length();i++){
+                if(Character.isDigit(deposit.charAt(i))){
+                    count++;
+                    if(count==5)return true;
+                } 
+            }return false;
+        
+        }
+    // public static boolean checkAccount(String account,Vector<String> accountNumber){
+    //     for(int i=0;i<accountNumber.size();i++){
+    //         if(accountNumber.get(i).equals(account)) return true;
+
+    //     }return false;
+    // }
+        
+
+
 }
