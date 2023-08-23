@@ -2,6 +2,11 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class App_Assignment2{
+    final static String COLOR_RED_BOLD="\033[31;1m";
+    final static String RESET="\033[0m";
+    final static String ERROR_MSG=String.format("%s%s%s",COLOR_RED_BOLD,"%s",RESET);
+    static Vector<String> accountNumber =new Vector<>();
+    
     
     private static final Scanner SCANNER=new Scanner(System.in);
     public static void main(String[] args) {
@@ -22,8 +27,7 @@ public class App_Assignment2{
         final String ERROR_MSG=String.format("%s%s%s",COLOR_RED_BOLD,"%s",RESET);
         final String SUCCESS_MSG=String.format("%s%s%s",COLOR_GREEN_BOLD,"%s",RESET);
 
-        // String[][] accountDetails=new String[0][];
-        Vector<String> accountNumber =new Vector<>();
+        
         Vector<String> accountHoldername=new Vector<>();
         Vector<String> accountBalance=new Vector<>();
         int deleteAccCount=0;
@@ -64,7 +68,7 @@ public class App_Assignment2{
                     String name;
                     String deposit;
                     boolean valid;
-                    System.out.printf("ID : SDB-%05d \n",(accountHoldername.size()+1+deleteAccCount));
+                    System.out.printf("ID : SBD-%05d \n",(accountHoldername.size()+1+deleteAccCount));
                     //Name Validation
                     do{
                     valid=true;
@@ -115,10 +119,15 @@ public class App_Assignment2{
                 accountHoldername.add(name);
                 accountBalance.add(deposit);
 
-                System.out.printf(SUCCESS_MSG,String.format("Account SDB-%05d for %s has been created sucessfully.\n",(accountHoldername.size()+deleteAccCount),name));
+                System.out.printf(SUCCESS_MSG,String.format("Account SBD-%05d for %s has been created sucessfully.\n",(accountHoldername.size()+deleteAccCount),name));
                 System.out.print("Do you want to add another (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
-                screen = DASHBOARD;
+                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")){
+                    screen=OPEN_ACCOUNT;
+                    break;
+                }else{
+                    screen = DASHBOARD;
+                }
+                
 
                 break;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,24 +143,9 @@ public class App_Assignment2{
                 do{
                     System.out.print("Enter your Account No : ");
                     accountNum=SCANNER.nextLine().strip();
-                do{ 
-                    valid=false;
 
-                    if(accountNum.isBlank()){
-                        System.out.printf(ERROR_MSG+"\n","Account Number can't be empty");
-                        break;
-                        
-                    }else if(!accountNum.startsWith("SBD-") || !(accountNum.length()==9 && checkNum(accountNum))){
-                        System.out.printf(ERROR_MSG+"\n","Invalid format");
-                        break;
-                    }else if(!accountNumber.contains(accountNum)){
-                        System.out.printf(ERROR_MSG+"\n","Not found");
-                        break;
-                    }else{
-                        valid=true;
-                    }
+                    valid=checkAccount(accountNum);
 
-                }while(!valid);
 
                 if(valid==false){
                 System.out.print("Do you want to try again (Y/n)? ");
@@ -214,24 +208,8 @@ public class App_Assignment2{
                 do{
                     System.out.print("Enter your Account No : ");
                     accountNum=SCANNER.nextLine().strip();
-                do{ 
-                    valid=false;
 
-                    if(accountNum.isBlank()){
-                        System.out.printf(ERROR_MSG+"\n","Account Number can't be empty");
-                        break;
-                        
-                    }else if(!accountNum.startsWith("SBD-") || !(accountNum.length()==9 && checkNum(accountNum))){
-                        System.out.printf(ERROR_MSG+"\n","Invalid format");
-                        break;
-                    }else if(!accountNumber.contains(accountNum)){
-                        System.out.printf(ERROR_MSG+"\n","Not found");
-                        break;
-                    }else{
-                        valid=true;
-                    }
-
-                }while(!valid);
+                valid=checkAccount(accountNum);
 
                 if(valid==false){
                 System.out.print("Do you want to try again (Y/n)? ");
@@ -265,12 +243,12 @@ public class App_Assignment2{
                         // continue;
                         break;
 
-                    }else if(Integer.valueOf(withdraw)<100){
+                    }else if(Double.valueOf(withdraw)<100){
                         System.out.printf(ERROR_MSG+"\n","Minimum withdrawal amount is Rs.100.00");
                         // valid=false;
                         // continue;
                         break;
-                    }else if((Integer.valueOf(accountBalance.get(index))-Integer.valueOf(withdraw))<500){
+                    }else if((Double.valueOf(accountBalance.get(index))-Double.valueOf(withdraw))<500){
                         System.out.printf(ERROR_MSG+"\n","Insufficient account balance");
                         break;
 
@@ -298,7 +276,7 @@ public class App_Assignment2{
                 }while(!valid);
                     
             break;
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
          case TRANSFER_MONEY:
                 String fromAccountNum;
@@ -312,24 +290,8 @@ public class App_Assignment2{
                 do{
                     System.out.print("Enter From Account No : ");
                     fromAccountNum=SCANNER.nextLine().strip();
-                do{ 
-                    valid=false;
-
-                    if(fromAccountNum.isBlank()){
-                        System.out.printf(ERROR_MSG+"\n","Account Number can't be empty");
-                        break;
-                        
-                    }else if(!fromAccountNum.startsWith("SBD-") || !(fromAccountNum.length()==9 && checkNum(fromAccountNum))){
-                        System.out.printf(ERROR_MSG+"\n","Invalid format");
-                        break;
-                    }else if(!accountNumber.contains(fromAccountNum)){
-                        System.out.printf(ERROR_MSG+"\n","Not found");
-                        break;
-                    }else{
-                        valid=true;
-                    }
-
-                }while(!valid);
+                    
+                     valid=checkAccount(fromAccountNum);
 
                 if(valid==false){
                 System.out.print("Do you want to try again (Y/n)? ");
@@ -343,26 +305,7 @@ public class App_Assignment2{
 
                 System.out.print("Enter To Account No : ");
                 toAccountNum=SCANNER.nextLine().strip();
-
-                ///////////////////////////////////////////////////////////////////////////////////////////
-                do{ 
-                    valid=false;
-
-                    if(toAccountNum.isBlank()){
-                        System.out.printf(ERROR_MSG+"\n","Account Number can't be empty");
-                        break;
-                        
-                    }else if(!toAccountNum.startsWith("SBD-") || !(toAccountNum.length()==9 && checkNum(toAccountNum))){
-                        System.out.printf(ERROR_MSG+"\n","Invalid format");
-                        break;
-                    }else if(!accountNumber.contains(toAccountNum)){
-                        System.out.printf(ERROR_MSG+"\n","Not found");
-                        break;
-                    }else{
-                        valid=true;
-                    }
-
-                }while(!valid);
+                valid=checkAccount(fromAccountNum);
 
                 if(valid==false){
                 System.out.print("Do you want to try again (Y/n)? ");
@@ -373,7 +316,7 @@ public class App_Assignment2{
                 screen = DASHBOARD;
                 break;}
                 }
-                //////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                 String balance;
                 fromIndex=accountNumber.indexOf(fromAccountNum);
@@ -418,11 +361,9 @@ public class App_Assignment2{
                      String totalFromAccount=(Double.valueOf(accountBalance.get(fromIndex))-(1.02*Double.valueOf(transferAmount)))+"";
                      accountBalance.set(fromIndex, totalFromAccount);
                      System.out.printf("New from account balance : Rs.%,.2f \n",Double.valueOf(totalFromAccount));
-
-                     String totalTOAccount=(Double.valueOf(accountBalance.get(toIndex))+Double.valueOf(transferAmount))+"";
-                     accountBalance.set(toIndex, totalTOAccount);
-                     System.out.printf("New to account balance : Rs.%,.2f \n",Double.valueOf(totalTOAccount));
-
+                     String totalToAccount=(Double.valueOf(accountBalance.get(toIndex))+Double.valueOf(transferAmount))+"";
+                     accountBalance.set(toIndex, totalToAccount);
+                     System.out.printf("New to account balance : Rs.%,.2f \n",Double.valueOf(totalToAccount));
                 }
 
                 
@@ -448,24 +389,8 @@ public class App_Assignment2{
                 do{
                     System.out.print("Enter your Account No : ");
                     accountNum=SCANNER.nextLine().strip();
-                do{ 
-                    valid=false;
 
-                    if(accountNum.isBlank()){
-                        System.out.printf(ERROR_MSG+"\n","Account Number can't be empty");
-                        break;
-                        
-                    }else if(!accountNum.startsWith("SBD-") || !(accountNum.length()==9 && checkNum(accountNum))){
-                        System.out.printf(ERROR_MSG+"\n","Invalid format");
-                        break;
-                    }else if(!accountNumber.contains(accountNum)){
-                        System.out.printf(ERROR_MSG+"\n","Not found");
-                        break;
-                    }else{
-                        valid=true;
-                    }
-
-                }while(!valid);
+                     valid=checkAccount(accountNum);
 
                 if(valid==false){
                 System.out.print("Do you want to try again (Y/n)? ");
@@ -506,24 +431,8 @@ public class App_Assignment2{
                 do{
                     System.out.print("Enter your Account No : ");
                     accountNum=SCANNER.nextLine().strip();
-                do{ 
-                    valid=false;
 
-                    if(accountNum.isBlank()){
-                        System.out.printf(ERROR_MSG+"\n","Account Number can't be empty");
-                        break;
-                        
-                    }else if(!accountNum.startsWith("SBD-") || !(accountNum.length()==9 && checkNum(accountNum))){
-                        System.out.printf(ERROR_MSG+"\n","Invalid format");
-                        break;
-                    }else if(!accountNumber.contains(accountNum)){
-                        System.out.printf(ERROR_MSG+"\n","Not found");
-                        break;
-                    }else{
-                        valid=true;
-                    }
-
-                }while(!valid);
+                     valid=checkAccount(accountNum);
 
                 if(valid==false){
                 System.out.print("Do you want to try again (Y/n)? ");
@@ -604,13 +513,28 @@ public class App_Assignment2{
             }return false;
         
         }
-    // public static boolean checkAccount(String account,Vector<String> accountNumber){
-    //     for(int i=0;i<accountNumber.size();i++){
-    //         if(accountNumber.get(i).equals(account)) return true;
+  
+    public static boolean checkAccount(String accountNum){
+        boolean valid=true;
+        do{ 
+            valid=false;
 
-    //     }return false;
-    // }
-        
+            if(accountNum.isBlank()){
+                System.out.printf(ERROR_MSG+"\n","Account Number can't be empty");
+                break;
+                
+            }else if(!accountNum.startsWith("SBD-") || !(accountNum.length()==9 && checkNum(accountNum))){
+                System.out.printf(ERROR_MSG+"\n","Invalid format");
+                break;
+            }else if(!accountNumber.contains(accountNum)){
+                System.out.printf(ERROR_MSG+"\n","Not found");
+                break;
+            }else{
+                valid=true;
+            }
 
+        }while(!valid);
+        return valid;
+    }
 
 }
