@@ -5,6 +5,17 @@ public class App_Assignment2{
     final static String COLOR_RED_BOLD="\033[31;1m";
     final static String RESET="\033[0m";
     final static String ERROR_MSG=String.format("%s%s%s",COLOR_RED_BOLD,"%s",RESET);
+    final static String DASHBOARD="💰 Welcome to Smart Banking App";
+    final static String OPEN_ACCOUNT="📂 Open New Account";
+    final static String DEPOSIT_MONEY="⏬ Deposit Money";
+    final static String WITHDRAW_MONEY="⏫ Withdraw Money";
+    final static String TRANSFER_MONEY="🔁 Transfer Money";
+    final static String ACCOUNT_BALANCE="💲 Check Account Balance";
+    final static String DELETE_ACCOUNT="❌ Drop Existing Account";
+    
+
+
+
     static Vector<String> accountNumber =new Vector<>();
     
     
@@ -15,13 +26,13 @@ public class App_Assignment2{
         final String COLOR_GREEN_BOLD="\033[32;1m";
         final String COLOR_RED_BOLD="\033[31;1m";
         final String RESET="\033[0m";
-        final String DASHBOARD="💰 Welcome to Smart Banking App";
-        final String OPEN_ACCOUNT="📂 Open New Account";
-        final String DEPOSIT_MONEY="⏬ Deposit Money";
-        final String WITHDRAW_MONEY="⏫ Withdraw Money";
-        final String TRANSFER_MONEY="🔁 Transfer Money";
-        final String ACCOUNT_BALANCE="💲 Check Account Balance";
-        final String DELETE_ACCOUNT="❌ Drop Existing Account";
+        // final String DASHBOARD="💰 Welcome to Smart Banking App";
+        // final String OPEN_ACCOUNT="📂 Open New Account";
+        // final String DEPOSIT_MONEY="⏬ Deposit Money";
+        // final String WITHDRAW_MONEY="⏫ Withdraw Money";
+        // final String TRANSFER_MONEY="🔁 Transfer Money";
+        // final String ACCOUNT_BALANCE="💲 Check Account Balance";
+        // final String DELETE_ACCOUNT="❌ Drop Existing Account";
         String screen=DASHBOARD;
         final String LINE="-".repeat(40);
         final String ERROR_MSG=String.format("%s%s%s",COLOR_RED_BOLD,"%s",RESET);
@@ -119,14 +130,8 @@ public class App_Assignment2{
                 accountHoldername.add(name);
                 accountBalance.add(deposit);
 
-                System.out.printf(SUCCESS_MSG,String.format("Account SBD-%05d for %s has been created sucessfully.\n",(accountHoldername.size()+deleteAccCount),name));
-                System.out.print("Do you want to add another (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")){
-                    screen=OPEN_ACCOUNT;
-                    break;
-                }else{
-                    screen = DASHBOARD;
-                }
+                System.out.printf(SUCCESS_MSG,String.format("Account SBD-%05d for %s has been created sucessfully.\n",(accountHoldername.size()+deleteAccCount),name));        
+                screen=checkAgain(OPEN_ACCOUNT,"add another");
                 
 
                 break;
@@ -148,12 +153,8 @@ public class App_Assignment2{
 
 
                 if(valid==false){
-                System.out.print("Do you want to try again (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                screen=DEPOSIT_MONEY;
-                break;}
-                else {screen = DASHBOARD;
-                break;}
+                     screen=checkAgain(DEPOSIT_MONEY,"try again");
+                     break;
                 }
 
                 String balance;
@@ -187,10 +188,9 @@ public class App_Assignment2{
                 String total=Double.valueOf(accountBalance.get(index))+Double.valueOf(newDeposit)+"";
                 accountBalance.set(index, total);
                 System.out.printf("New balance : Rs.%,.2f \n",Double.valueOf(total));
-                
-                System.out.print("Do you want to continue (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) continue;
-                screen = DASHBOARD;
+
+                screen=checkAgain(DEPOSIT_MONEY,"continue");
+                break;
 
 
                 }while(!valid);
@@ -212,12 +212,8 @@ public class App_Assignment2{
                 valid=checkAccount(accountNum);
 
                 if(valid==false){
-                System.out.print("Do you want to try again (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                screen=DEPOSIT_MONEY;
-                break;}
-                else {screen = DASHBOARD;
-                break;}
+                     screen=checkAgain(WITHDRAW_MONEY,"try again");
+                     break;
                 }
 
                 String balance;
@@ -233,20 +229,14 @@ public class App_Assignment2{
 
                     if(withdraw.isBlank()){
                         System.out.printf(ERROR_MSG+"\n","Withdrawal can't be empty");
-                        // valid=false;
-                        // continue;
                         break;
                         
                     }else if((checkLetter(withdraw))){
                         System.out.printf(ERROR_MSG+"\n","Invalid Value");
-                        // valid=false;
-                        // continue;
                         break;
 
                     }else if(Double.valueOf(withdraw)<100){
                         System.out.printf(ERROR_MSG+"\n","Minimum withdrawal amount is Rs.100.00");
-                        // valid=false;
-                        // continue;
                         break;
                     }else if((Double.valueOf(accountBalance.get(index))-Double.valueOf(withdraw))<500){
                         System.out.printf(ERROR_MSG+"\n","Insufficient account balance");
@@ -264,15 +254,9 @@ public class App_Assignment2{
                 accountBalance.set(index, total);
                 System.out.printf("New balance : Rs.%,.2f \n",Double.valueOf(total));
                 }
-               
-                System.out.print("Do you want to continue (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                    screen=WITHDRAW_MONEY;
-                    break;
-                }else{
-                    screen = DASHBOARD;
-                    break;
-                }
+
+                 screen=checkAgain(WITHDRAW_MONEY,"continue");
+                 break;
                 }while(!valid);
                     
             break;
@@ -294,12 +278,8 @@ public class App_Assignment2{
                      valid=checkAccount(fromAccountNum);
 
                 if(valid==false){
-                System.out.print("Do you want to try again (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                screen=TRANSFER_MONEY;
-                break;}
-                else {screen = DASHBOARD;
-                break;}
+                     screen=checkAgain(TRANSFER_MONEY,"try again");
+                     break;
                 }
 
 
@@ -308,13 +288,8 @@ public class App_Assignment2{
                 valid=checkAccount(fromAccountNum);
 
                 if(valid==false){
-                System.out.print("Do you want to try again (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                screen=TRANSFER_MONEY;
-                break;}
-                else {
-                screen = DASHBOARD;
-                break;}
+                    screen=checkAgain(TRANSFER_MONEY,"try again");
+                    break;
                 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -329,28 +304,20 @@ public class App_Assignment2{
                     valid=false;
                     System.out.print("Transfer amount : ");
                     transferAmount=SCANNER.nextLine();
-
                     if(transferAmount.isBlank()){
                         System.out.printf(ERROR_MSG+"\n","Transfer amount can't be empty");
-                        // valid=false;
-                        // continue;
                         break;
                         
                     }else if((checkLetter(transferAmount))){
                         System.out.printf(ERROR_MSG+"\n","Invalid Value");
-                        // valid=false;
-                        // continue;
                         break;
 
                     }else if(Double.valueOf(transferAmount)<100){
-                        System.out.printf(ERROR_MSG+"\n","Minimum withdrawal amount is Rs.100.00");
-                        // valid=false;
-                        // continue;
+                        System.out.printf(ERROR_MSG+"\n","Minimum transfer amount is Rs.100.00");
                         break;
                     }else if((Double.valueOf(accountBalance.get(fromIndex))-Double.valueOf(transferAmount))<500){
                         System.out.printf(ERROR_MSG+"\n","Insufficient account balance");
                         break;
-
                     }else{
                         valid=true;
                     }
@@ -366,16 +333,9 @@ public class App_Assignment2{
                      System.out.printf("New to account balance : Rs.%,.2f \n",Double.valueOf(totalToAccount));
                 }
 
-                
-                System.out.print("Do you want to continue (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                    screen=TRANSFER_MONEY;
-                    break;
-                }else{
-                    screen = DASHBOARD;
-                    break;
-                }
 
+                 screen=checkAgain(TRANSFER_MONEY,"continue");
+                 break;
 
                 }while(!valid);
                     
@@ -389,16 +349,12 @@ public class App_Assignment2{
                 do{
                     System.out.print("Enter your Account No : ");
                     accountNum=SCANNER.nextLine().strip();
-
-                     valid=checkAccount(accountNum);
+                    valid=checkAccount(accountNum);
 
                 if(valid==false){
-                System.out.print("Do you want to try again (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                screen=ACCOUNT_BALANCE;
-                break;}
-                else {screen = DASHBOARD;
-                break;}
+                  screen=checkAgain(ACCOUNT_BALANCE,"try again");
+                  break;
+
                 }
 
                 String balance;
@@ -410,15 +366,10 @@ public class App_Assignment2{
                 System.out.printf("Current account balance :Rs.%,.2f \n",Double.valueOf(balance));
                 System.out.printf("Available balance to withdraw :Rs.%,.2f \n",availableWithdraw);
                 
-                
-                System.out.print("Do you want to continue (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                  screen=ACCOUNT_BALANCE;
-                  break;
-                }else{
-                  screen = DASHBOARD;
-                  break;
-                }
+
+                 screen=checkAgain(ACCOUNT_BALANCE,"continue");
+                 break;
+
 
                 }while(!valid);
                     
@@ -435,12 +386,9 @@ public class App_Assignment2{
                      valid=checkAccount(accountNum);
 
                 if(valid==false){
-                System.out.print("Do you want to try again (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                screen=ACCOUNT_BALANCE;
-                break;}
-                else {screen = DASHBOARD;
-                break;}
+                 screen=checkAgain(DELETE_ACCOUNT,"try again");
+                 break;
+
                 }
 
                 String balance;
@@ -464,15 +412,9 @@ public class App_Assignment2{
                   break;
                 }
 
-                System.out.print("Do you want to continue (Y/n)? ");
-                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
-                  screen=ACCOUNT_BALANCE;
-                  break;
-                }else{
-                  screen = DASHBOARD;
-                  break;
-                }
 
+                 screen=checkAgain(DELETE_ACCOUNT,"continue");
+                 break;
 
                 }while(!valid);
                     
@@ -535,6 +477,16 @@ public class App_Assignment2{
 
         }while(!valid);
         return valid;
+    }
+    public static String checkAgain(String abc,String ask){
+         String x;
+         System.out.print(String.format("Do you want to %s (Y/n)? ",ask));
+                if (SCANNER.nextLine().strip().toUpperCase().equals("Y")) {
+                x=abc;
+                return x;}
+                else {x = DASHBOARD;
+                return x;}
+        
     }
 
 }
